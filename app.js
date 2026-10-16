@@ -59,7 +59,8 @@
     for (const [key, options] of Object.entries(config)) {
       if (!options.src) continue;
       const audio = new Audio(options.src);
-      audio.preload = 'metadata'; audio.loop = false; audio.volume = 0;
+      audio.preload = key === 'intro' ? 'auto' : 'metadata';
+      audio.loop = false; audio.volume = options.volume ?? .35;
       audio.addEventListener('ended', () => {
         audio.currentTime = Math.min(options.start || 0, Math.max(0, audio.duration - .2));
         if (enabled && selected === key) audio.play().catch(() => render(false));
@@ -100,6 +101,10 @@
         return;
       }
       try {
+        // Request audible playback directly inside the gesture. Starting at volume 0
+        // can be allowed as silent autoplay, then blocked when the fade becomes audible.
+        if (window.gsap) gsap.killTweensOf(audio);
+        audio.volume = settings.volume ?? .35;
         if (restart || changed || audio.currentTime < (settings.start || 0)) {
           const seek = () => { audio.currentTime = Math.min(settings.start || 0, Number.isFinite(audio.duration) ? Math.max(0, audio.duration - .2) : settings.start || 0); };
           if (audio.readyState >= 1) seek();
@@ -110,7 +115,11 @@
         if (!enabled || selected !== key) { audio.pause(); return; }
         if (request !== generation) return;
         volume(audio, settings.volume ?? .35); render(true);
-      } catch { render(false); if (explicit) notice('轻点右上角的音乐按钮，即可再次尝试开启声音。'); }
+      } catch {
+        if (request !== generation || selected !== key) return;
+        render(false);
+        if (explicit) notice('轻点右上角的音乐按钮，即可再次尝试开启声音。');
+      }
     }
     function select(key, restart = false) { return play(key, false, restart); }
     $('sound-button').addEventListener('click', () => {
@@ -121,12 +130,16 @@
         render(false);
       } else { enabled = true; play(selected, true); }
     });
-    // First visit attempts audible playback; the same action is retried on the first real tap if blocked.
-    document.addEventListener('pointerdown', (event) => {
+    // Retry in the actual activation event: touchend on mobile and click for
+    // mouse, keyboard or assistive technology. A touch pointerdown alone may
+    // happen before the browser grants transient user activation.
+    function retryOnGesture(event) {
       if (event.target.closest('#sound-button')) return;
       const audio = tracks[selected];
       if (enabled && audio?.paused) play(selected);
-    }, { passive: true });
+    }
+    document.addEventListener('touchend', retryOnGesture, { passive: true });
+    document.addEventListener('click', retryOnGesture);
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) Object.values(tracks).forEach(a => a.pause());
       else if (enabled) play(selected);
