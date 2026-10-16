@@ -14,3 +14,9 @@
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .closing-card h2{width:100%;max-width:100%;text-wrap:wrap;word-break:normal;overflow-wrap:normal}
 .closing-card h2 span{display:block;white-space:nowrap}
+/* Personal handwritten closing, traced from the supplied pen signature. */
+.closing-card{gap:7px}
+.closing-card .pochacco{height:38%;min-height:110px;max-height:220px}
+.signature{width:clamp(120px,37vw,152px);height:auto;aspect-ratio:1360/740;flex-shrink:0;align-self:flex-end;margin:5px 0 0;color:#294159;pointer-events:none;user-select:none}
+.signature-art{display:block;width:100%;height:auto;overflow:visible}
+@media(max-height:740px){.closing-card{gap:5px;padding-block:22px}.closing-card .pochacco{height:38%;min-height:105px}.signature{width:clamp(116px,34vw,138px);margin-top:4px}}

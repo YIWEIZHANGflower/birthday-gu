@@ -6,7 +6,7 @@
   const dots = [...document.querySelectorAll('.page-dot')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let stage = 'gift', page = 0, wished = false, busy = false;
-  let flameTweens = [], cardTimeline = null, audioNoticeTimer;
+  let flameTweens = [], cardTimeline = null, signatureTimeline = null, audioNoticeTimer;
   const stateHash = () => stage === 'letter' ? `#letter-${page + 1}` : stage === 'wish' ? (wished ? '#wish-done' : '#wish') : '#gift';
   const announce = (text) => { $('announcement').textContent = text; };
   const focus = (el) => { if (el) el.focus({ preventScroll: true }); };
@@ -147,6 +147,34 @@
     return { select, render, hasAudio: () => Object.keys(tracks).length === 2 };
   })();
 
+  const signatureStrokes = [...document.querySelectorAll('.signature-stroke')];
+  const signatureFinish = document.querySelector('.signature-finish');
+
+  function finishSignature() {
+    signatureTimeline?.kill(); signatureTimeline = null;
+    signatureStrokes.forEach(stroke => { stroke.style.strokeDashoffset = '0'; });
+    if (signatureFinish) signatureFinish.style.opacity = '1';
+  }
+
+  function writeSignature(delay = 0) {
+    finishSignature();
+    if (!window.gsap || reducedMotion.matches || !signatureFinish) return;
+    signatureStrokes.forEach(stroke => {
+      const length = stroke.getTotalLength();
+      stroke.style.strokeDasharray = `${length} ${length}`;
+      stroke.style.strokeDashoffset = String(length);
+    });
+    signatureFinish.style.opacity = '0';
+    signatureTimeline = gsap.timeline({ delay });
+    signatureStrokes.forEach(stroke => {
+      signatureTimeline.to(stroke, {
+        strokeDashoffset: 0, duration: Number(stroke.dataset.duration), ease: 'none'
+      }, '+=0.035');
+    });
+    // Finish the fine ink edges without changing the traced handwriting.
+    signatureTimeline.to(signatureFinish, { opacity: 1, duration: .18, ease: 'none' });
+  }
+
   function showStage(next, { record = true, moveFocus = true } = {}) {
     if (!stages[next]) return;
     const previous = stages[stage];
@@ -163,8 +191,10 @@
     $('cake-visual').classList.toggle('is-out', wished);
     if (next === 'wish') { requestAnimationFrame(positionFlames); candleMotion(); }
     else { flameTweens.forEach(t => t.kill()); flameTweens = []; }
-    if (next === 'letter') { renderPage(page); music.select('letter'); }
-    else music.select('intro');
+    if (next === 'letter') {
+      renderPage(page); music.select('letter');
+      if (page === cards.length - 1) writeSignature(.65);
+    } else { finishSignature(); music.select('intro'); }
     if (record) saveHistory();
     if (window.gsap && !reducedMotion.matches) gsap.fromTo(stages[next], { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .65, ease: 'power2.out', clearProps: 'transform' });
     if (moveFocus) requestAnimationFrame(() => focus(next === 'gift' ? $('gift-heading') : next === 'wish' ? $('wish-heading') : cards[page].querySelector('h2')));
@@ -172,6 +202,7 @@
   }
 
   function renderPage(index) {
+    finishSignature();
     cards.forEach((card, i) => {
       const active = i === index;
       card.hidden = !active; card.inert = !active; card.classList.toggle('is-active', active);
@@ -204,6 +235,7 @@
         .fromTo(newCard, { xPercent: direction * 14, rotation: direction * 2, autoAlpha: 0 }, { xPercent: 0, rotation: 0, autoAlpha: 1 }, .06)
         .call(() => { oldCard.hidden = true; oldCard.style.zIndex = ''; newCard.style.zIndex = ''; });
     }
+    if (page === cards.length - 1) writeSignature(.58);
     announce(`第 ${page + 1} 页，共六页。`);
     if (moveFocus) focus(newCard.querySelector('h2'));
   }
@@ -290,6 +322,7 @@
   window.addEventListener('popstate', restore);
   window.addEventListener('resize', positionFlames, { passive: true });
   reducedMotion.addEventListener?.('change', candleMotion);
+  reducedMotion.addEventListener?.('change', () => { if (reducedMotion.matches) finishSignature(); });
   $('cake-art').addEventListener('load', positionFlames);
   restore(); saveHistory(true);
   // Expose only non-sensitive state for local QA and audio configuration checks.
