@@ -10,3 +10,7 @@
 @media(max-width:360px){:root{--heading:23px;--body:17px}.letter-surround{padding-inline:25px}.letter-card{padding-inline:22px}.salutation{margin-bottom:21px}.paragraph-gap{margin-top:22px}.page-dot{width:28px}.gift-copy h1{font-size:29px}.stage-controls{left:12px;right:12px}.stage-controls p{font-size:14px}.narrow-only{display:block}}
 @media(max-height:740px){.experience{min-height:650px}.gift-copy,.wish-copy{top:14%}.gift-copy h1{font-size:31px}.wish-copy h2{font-size:26px}.letter-surround{padding-top:75px;justify-content:flex-start}.paper-stack{height:450px}.letter-card{padding-top:30px}.salutation{margin-bottom:20px}.letter-body{font-size:17px;line-height:1.85}.letter-card h2{font-size:24px}.paragraph-gap{margin-top:21px}.closing-card h2{font-size:27px}.closing-wish{font-size:23px}.letter-navigation{margin-top:10px}.stage-controls{bottom:7%}.wish-controls{bottom:5%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.sparkles{display:none}}
+/* Keep the closing greeting on its two intentional lines in mobile WebKit. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.closing-card h2{width:100%;max-width:100%;text-wrap:wrap;word-break:normal;overflow-wrap:normal}
+.closing-card h2 span{display:block;white-space:nowrap}
