@@ -7,10 +7,12 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let stage = 'gift', page = 0, wished = false, busy = false;
   let flameTweens = [], cardTimeline = null, signatureTimeline = null, audioNoticeTimer;
-  const stateHash = () => stage === 'letter' ? `#letter-${page + 1}` : stage === 'wish' ? (wished ? '#wish-done' : '#wish') : '#gift';
+  const shareHash = '#From-YIWEI-ZHANG';
   const announce = (text) => { $('announcement').textContent = text; };
   const focus = (el) => { if (el) el.focus({ preventScroll: true }); };
-  const saveHistory = (replace = false) => history[replace ? 'replaceState' : 'pushState']({ stage, page, wished }, '', stateHash());
+  const saveHistory = (replace = false) => history[replace ? 'replaceState' : 'pushState'](
+    { birthdayCard: 1, stage, page, wished }, '', `${location.pathname}${shareHash}`
+  );
 
   function tween(target, vars) {
     if (window.gsap) return gsap.to(target, { ...vars, duration: reducedMotion.matches ? 0 : vars.duration });
@@ -332,9 +334,17 @@
     cardTimeline?.kill();
     const hash = location.hash;
     const match = hash.match(/^#letter-([1-6])$/);
-    wished = hash === '#wish-done' || !!match;
-    page = match ? Number(match[1]) - 1 : 0;
-    showStage(match ? 'letter' : hash.startsWith('#wish') ? 'wish' : 'gift', { record: false, moveFocus: false });
+    const saved = history.state;
+    const savedVisit = hash === shareHash && saved?.birthdayCard === 1 &&
+      Object.hasOwn(stages, saved.stage) && Number.isInteger(saved.page) &&
+      saved.page >= 0 && saved.page < cards.length && typeof saved.wished === 'boolean';
+    // The address stays shareable while browser history remembers the open page.
+    // Existing gift/wish/letter links are still accepted and then normalized.
+    wished = savedVisit ? saved.wished : hash === '#wish-done' || !!match;
+    page = savedVisit ? saved.page : match ? Number(match[1]) - 1 : 0;
+    const next = savedVisit ? saved.stage : match ? 'letter' : hash.startsWith('#wish') ? 'wish' : 'gift';
+    showStage(next, { record: false, moveFocus: false });
+    saveHistory(true);
     // Restore candle appearance if returning to an unlit visit through browser history.
     if (!wished && window.gsap) gsap.set('.flame', { clearProps: 'opacity,visibility,transform' });
   }
@@ -343,7 +353,7 @@
   reducedMotion.addEventListener?.('change', candleMotion);
   reducedMotion.addEventListener?.('change', () => { if (reducedMotion.matches) finishSignature(); });
   $('cake-art').addEventListener('load', positionFlames);
-  restore(); saveHistory(true);
+  restore();
   // Expose only non-sensitive state for local QA and audio configuration checks.
   window.birthdayState = () => ({ stage, page: page + 1, wished, audioConfigured: music.hasAudio() });
 })();
