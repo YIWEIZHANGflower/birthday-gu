@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#132b46">
+  <meta name="description" content="一份写给顾同学的生日祝福。">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="dark">
+  <title>顾同学，生日快乐</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preload" href="intro.png" as="image" fetchpriority="high">
+  <link rel="preload" href="serif-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="gsap.min.js"></script>
+  <script defer src="music-config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到生日祝福</a>
+  <main id="main" class="experience">
+    <div class="sky-backdrop" aria-hidden="true"></div>
+    <div id="sparkles" class="sparkles" aria-hidden="true"></div>
+    <header class="toolbar">
+      <button id="back-button" class="icon-button back-button" type="button" aria-label="返回上一页" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>
+      </button>
+      <button id="sound-button" class="sound-button" type="button" aria-label="开启音乐" aria-pressed="false">
+        <svg class="sound-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5 5 9H2v6h3l5 4V5Z"/><path class="sound-waves" d="M14 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-slash" d="m15 9 6 6m0-6-6 6"/></svg>
+        <span id="sound-label">开启音乐</span>
+      </button>
+    </header>
+
+    <section id="gift" class="stage gift-stage" aria-labelledby="gift-heading">
+      <img class="scene-art intro-art" src="intro.png" width="1024" height="1536" alt="夜色湖畔，一封装点着洋桔梗的粉色生日信" fetchpriority="high">
+      <div class="scene-shade" aria-hidden="true"></div>
+      <div class="gift-copy">
+        <h1 id="gift-heading" tabindex="-1">顾同学，<br><span>20 岁生日快乐。</span></h1>
+      </div>
+      <div class="stage-controls gift-controls">
+        <p>今天，有一份小小的祝福想送给你。</p>
+        <button id="open-gift" class="primary-button" type="button">打开看看 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+    </section>
+
+    <section id="wish" class="stage wish-stage" aria-labelledby="wish-heading" hidden inert>
+      <div id="cake-visual" class="cake-visual">
+        <img id="cake-art" class="scene-art cake-art" src="cake.png" width="1024" height="1536" alt="帕恰狗主题生日蛋糕，配有洋桔梗和数字 20 蜡烛" decoding="async">
+        <div class="flame flame-two" aria-hidden="true"><i></i></div>
+        <div class="flame flame-zero" aria-hidden="true"><i></i></div>
+        <div class="candle-smoke" aria-hidden="true"></div>
+      </div>
+      <div class="scene-shade wish-shade" aria-hidden="true"></div>
+      <div class="wish-copy">
+        <h2 id="wish-heading" tabindex="-1">二十岁的第一个愿望，<br>留给你自己。</h2>
+      </div>
+      <div class="stage-controls wish-controls">
+        <div id="before-wish">
+          <p>闭上眼睛，许个愿吧。</p>
+          <button id="make-wish" class="primary-button" type="button">许好愿了</button>
+        </div>
+        <div id="after-wish" hidden>
+          <p>希望某一天，<br>你会发现，今天许的愿已经实现了。</p>
+          <button id="open-letter" class="primary-button" type="button">打开信 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="letter" class="stage letter-stage" aria-label="生日来信，共六页" hidden inert>
+      <div class="letter-surround">
+        <div class="paper-stack">
+          <div class="paper-shadow" aria-hidden="true"></div>
+          <div id="letter-deck" class="letter-deck" aria-roledescription="轮播" aria-label="生日信笺">
+            <article class="letter-card is-active" data-card="0" aria-label="第 1 页，共 6 页" aria-roledescription="幻灯片">
+              <div class="card-text">
+                <p class="salutation">顾同学：</p>
+                <h2 tabindex="-1">生日快乐，</h2>
+                <p class="letter-body">恭喜你正式迎来二十岁。</p>
+                <p class="letter-body paragraph-gap">准备了这个小小的页面，<br>希望能给你的生日<br class="narrow-only">添一点惊喜。</p>
+              </div>
+              <span class="embossed-age" aria-hidden="true">20</span>
+              <img class="botanical botanical-first" src="flower.png" width="512" height="768" alt="" decoding="async">
+            </article>
+            <article class="letter-card" data-card="1" aria-label="第 2 页，共 6 页" aria-roledescription="幻灯片" hidden inert>
+              <div class="card-text">
+                <h2 tabindex="-1">新的一岁，<br>希望你身体健康，</h2>
+                <p class="letter-body paragraph-gap">做喜欢的事有时间，<br>做想尝试的事有勇气，<br>付出的努力也能得到<br>让你开心的结果。</p>
+              </div>
+              <img class="botanical botanical-left" src="flower.png" width="512" height="768" alt="" decoding="async">
+            </article>
+            <article class="letter-card" data-card="2" aria-label="第 3 页，共 6 页" aria-roledescription="幻灯片" hidden inert>
+              <div class="card-text">
+                <h2 tabindex="-1">希望你有很多<br>开心的瞬间：</h2>
+                <p class="letter-body paragraph-gap">吃到惦记很久的东西，<br>听到一首喜欢的歌，<br>和朋友聊着聊着<br>就笑出了声。</p>
+              </div>
+              <img class="botanical botanical-right" src="flower.png" width="512" height="768" alt="" decoding="async">
+            </article>
+            <article class="letter-card" data-card="3" aria-label="第 4 页，共 6 页" aria-roledescription="幻灯片" hidden inert>
+              <div class="card-text">
+                <h2 tabindex="-1">也祝你能去<br>想去的地方，</h2>
+                <p class="letter-body paragraph-gap">看到新的风景，<br>留下以后翻起来<br>还会笑的照片。</p>
+              </div>
+              <svg class="paper-mountains" viewBox="0 0 500 210" aria-hidden="true"><defs><linearGradient id="mountain-wash" x2="0" y2="1"><stop stop-color="#a1b8cc" stop-opacity=".7"/><stop offset="1" stop-color="#c5d6e0" stop-opacity=".05"/></linearGradient></defs><path d="m0 146 45-24 25 14 41-44 24 22 52-67 24 33 40-59 36 43 16-14 51 59 24-27 62 64 60-22v86H0Z" fill="url(#mountain-wash)"/><path d="m0 163 60-14 20 5 45-27 31 17 39-32 41 25 37-14 42 24 32-11 33 25 30-8 35 12 55-10" fill="none" stroke="#9fb8cb" stroke-width="2" opacity=".7"/><path d="M35 182h430m-360 10h264" stroke="#9fb8cb" opacity=".5"/></svg>
+              <img class="botanical botanical-journey" src="flower.png" width="512" height="768" alt="" decoding="async">
+            </article>
+            <article class="letter-card" data-card="4" aria-label="第 5 页，共 6 页" aria-roledescription="幻灯片" hidden inert>
+              <div class="card-text">
+                <p class="salutation">顾同学，</p>
+                <h2 tabindex="-1">愿你的二十岁，<br>自在、明亮，</h2>
+                <p class="letter-body paragraph-gap">有许多值得期待的明天。</p>
+              </div>
+              <img class="botanical botanical-fifth" src="flower.png" width="512" height="768" alt="" decoding="async">
+            </article>
+            <article class="letter-card closing-card" data-card="5" aria-label="第 6 页，共 6 页" aria-roledescription="幻灯片" hidden inert>
+              <h2 tabindex="-1">生日快乐，<br>顾同学。</h2>
+              <img class="pochacco" src="pochacco.png" width="768" height="1024" alt="帕恰狗抱着白色和淡紫色洋桔梗" decoding="async">
+              <p class="closing-wish">天天开心。</p>
+            </article>
+          </div>
+        </div>
+        <nav class="letter-navigation" aria-label="翻阅生日来信">
+          <button id="previous-card" class="icon-button page-arrow" type="button" aria-label="上一页" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+          <div class="pagination" role="group" aria-label="选择信笺页数">
+            <button type="button" class="page-dot is-current" aria-label="第 1 页" aria-current="true" data-page="0"><span></span></button>
+            <button type="button" class="page-dot" aria-label="第 2 页" data-page="1"><span></span></button>
+            <button type="button" class="page-dot" aria-label="第 3 页" data-page="2"><span></span></button>
+            <button type="button" class="page-dot" aria-label="第 4 页" data-page="3"><span></span></button>
+            <button type="button" class="page-dot" aria-label="第 5 页" data-page="4"><span></span></button>
+            <button type="button" class="page-dot" aria-label="第 6 页" data-page="5"><span></span></button>
+          </div>
+          <button id="next-card" class="icon-button page-arrow" type="button" aria-label="下一页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        </nav>
+        <p id="swipe-hint" class="swipe-hint">左右轻滑</p>
+        <button id="read-again" class="read-again" type="button" hidden>再读一次</button>
+      </div>
+    </section>
+    <div id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    <p id="audio-notice" class="audio-notice" role="status" hidden></p>
+  </main>
+  <noscript><div class="noscript-note">顾同学，20 岁生日快乐。愿你的二十岁，自在、明亮，有许多值得期待的明天。<br>开启浏览器的 JavaScript 后，可以拆开完整的生日来信。</div></noscript>
+</body>
+</html>
