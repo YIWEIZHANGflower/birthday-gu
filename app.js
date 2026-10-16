@@ -148,31 +148,50 @@
   })();
 
   const signatureStrokes = [...document.querySelectorAll('.signature-stroke')];
+  const fromStrokes = [...document.querySelectorAll('.from-stroke')];
   const signatureFinish = document.querySelector('.signature-finish');
+  const signatureParts = document.querySelector('.signature-parts');
 
   function finishSignature() {
     signatureTimeline?.kill(); signatureTimeline = null;
-    signatureStrokes.forEach(stroke => { stroke.style.strokeDashoffset = '0'; });
+    [...fromStrokes, ...signatureStrokes].forEach(stroke => {
+      stroke.style.strokeDashoffset = '0'; stroke.style.visibility = 'visible';
+    });
     if (signatureFinish) signatureFinish.style.opacity = '1';
+    if (signatureParts) signatureParts.style.opacity = '0';
   }
 
   function writeSignature(delay = 0) {
     finishSignature();
     if (!window.gsap || reducedMotion.matches || !signatureFinish) return;
-    signatureStrokes.forEach(stroke => {
+    [...fromStrokes, ...signatureStrokes].forEach(stroke => {
       const length = stroke.getTotalLength();
       stroke.style.strokeDasharray = `${length} ${length}`;
       stroke.style.strokeDashoffset = String(length);
+      stroke.style.visibility = 'hidden';
     });
     signatureFinish.style.opacity = '0';
+    if (signatureParts) signatureParts.style.opacity = '1';
     signatureTimeline = gsap.timeline({ delay });
-    signatureStrokes.forEach(stroke => {
-      signatureTimeline.to(stroke, {
-        strokeDashoffset: 0, duration: Number(stroke.dataset.duration), ease: 'none'
-      }, '+=0.035');
+    function drawStroke(stroke, pause = 0) {
+      const length = stroke.getTotalLength(), duration = Number(stroke.dataset.duration);
+      signatureTimeline.set(stroke, { visibility: 'visible' }, `+=${pause}`);
+      const pace = (stroke.dataset.pace || '0,0;1,1').split(';').map(pair => pair.split(',').map(Number));
+      for (let i = 1; i < pace.length; i++) {
+        signatureTimeline.to(stroke, {
+          strokeDashoffset: length * (1 - pace[i][1]),
+          duration: duration * (pace[i][0] - pace[i - 1][0]), ease: 'none'
+        });
+      }
+    }
+    fromStrokes.forEach(stroke => drawStroke(stroke));
+    signatureStrokes.forEach((stroke, index) => {
+      drawStroke(stroke, Number(stroke.dataset.delay || 0) + (index === 0 ? .25 : 0));
     });
-    // Finish the fine ink edges without changing the traced handwriting.
-    signatureTimeline.to(signatureFinish, { opacity: 1, duration: .18, ease: 'none' });
+    // Each mask only reveals its own original ink, so later strokes cannot
+    // appear early at crossings. The completed silhouette remains identical.
+    signatureTimeline.set(signatureFinish, { opacity: 1 });
+    if (signatureParts) signatureTimeline.set(signatureParts, { opacity: 0 });
   }
 
   function showStage(next, { record = true, moveFocus = true } = {}) {

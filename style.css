@@ -20,3 +20,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .signature{width:clamp(120px,37vw,152px);height:auto;aspect-ratio:1360/740;flex-shrink:0;align-self:flex-end;margin:5px 0 0;color:#294159;pointer-events:none;user-select:none}
 .signature-art{display:block;width:100%;height:auto;overflow:visible}
 @media(max-height:740px){.closing-card{gap:5px;padding-block:22px}.closing-card .pochacco{height:38%;min-height:105px}.signature{width:clamp(116px,34vw,138px);margin-top:4px}}
+/* Authorship: write From first, then follow the supplied signing video. */
+.signature-wrap{display:flex;align-items:center;gap:5px;align-self:flex-end;flex-shrink:0;margin-top:5px;color:#294159;pointer-events:none;user-select:none}
+.signature-wrap .signature{margin:0;align-self:auto}
+.from-art{display:block;width:40px;height:25px;flex-shrink:0;transform:translateY(-8px)}
+.signature-parts{opacity:0}
+.site-credit{position:absolute;left:14px;right:14px;bottom:calc(11px + env(safe-area-inset-bottom));z-index:12;text-align:center;font-family:var(--sans);font-size:10px;line-height:1.5;letter-spacing:.055em;color:#d8e0e8;opacity:.78;pointer-events:none;white-space:nowrap}
+@media(max-height:740px){.signature-wrap{margin-top:4px}.from-art{width:36px;height:23px}}
+@media(max-height:680px){.letter-surround{padding-top:58px}.paper-stack{height:440px}}
